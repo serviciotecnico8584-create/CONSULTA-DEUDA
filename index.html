@@ -61,35 +61,27 @@
 <script>
 function consultar() {
   var dni = document.getElementById("dni").value;
+  var script = document.createElement("script");
 
-  fetch("https://script.google.com/macros/s/AKfycbxSWjcCQar_kmiODloKBJmyFlA_jj3AHAeB34QcpZrDsA9kFTFFZMkhZB202aHAdqHc/exec?dni=" + dni)
-    .then(res => res.json())
-    .then(data => {
+  script.src = "https://script.google.com/macros/s/AKfycbxSWjcCQar_kmiODloKBJmyFlA_jj3AHAeB34QcpZrDsA9kFTFFZMkhZB202aHAdqHc/exec?dni=" + dni + "&callback=mostrar";
 
-      if (data.error) {
-        resultado.innerText = data.error;
-        return;
-      }
+  document.body.appendChild(script);
+}
 
-      var estado = "";
-      var clase = "";
+function mostrar(data) {
+  var resultado = document.getElementById("resultado");
 
-      if (data.deuda > 0) {
-        estado = "🔴 Tiene deuda";
-        clase = "deuda";
-      } else {
-        estado = "🟢 Al día";
-        clase = "ok";
-      }
+  if (data.error) {
+    resultado.innerText = data.error;
+    return;
+  }
 
-      document.getElementById("resultado").innerHTML =
-        "Cliente: " + data.nombre + "<br>" +
-        "Deuda: $" + data.deuda + "<br>" +
-        "<span class='" + clase + "'>" + estado + "</span>";
-    })
-    .catch(() => {
-      resultado.innerText = "Error al consultar";
-    });
+  var estado = data.deuda > 0 ? "🔴 Tiene deuda" : "🟢 Al día";
+
+  resultado.innerHTML =
+    "Cliente: " + data.nombre + "<br>" +
+    "Deuda: $" + data.deuda + "<br>" +
+    estado;
 }
 </script>
 

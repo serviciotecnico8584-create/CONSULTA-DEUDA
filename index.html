@@ -62,14 +62,18 @@
 function consultar() {
   var dni = document.getElementById("dni").value;
 
-  // eliminar script anterior si existe
+  // eliminar script anterior
   var viejo = document.getElementById("jsonp");
   if (viejo) viejo.remove();
 
   var script = document.createElement("script");
   script.id = "jsonp";
 
-  script.src = "https://script.google.com/macros/s/AKfycbxSWjcCQar_kmiODloKBJmyFlA_jj3AHAeB34QcpZrDsA9kFTFFZMkhZB202aHAdqHc/exec?dni=" + dni + "&callback=mostrar";
+  // 🔥 anti-cache
+  var t = new Date().getTime();
+
+  script.src = "https://script.google.com/macros/s/AKfycbxSWjcCQar_kmiODloKBJmyFlA_jj3AHAeB34QcpZrDsA9kFTFFZMkhZB202aHAdqHc/exec?dni=" 
+    + dni + "&callback=mostrar&_=" + t;
 
   document.body.appendChild(script);
 }
@@ -77,10 +81,10 @@ function consultar() {
 function mostrar(data) {
   var resultado = document.getElementById("resultado");
 
-  console.log("DATA:", data); // 👈 DEBUG
+  console.log("DATA:", data); // debug
 
   if (!data || data.error) {
-    resultado.innerText = data?.error || "Sin respuesta";
+    resultado.innerText = data?.error || "Sin datos";
     return;
   }
 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta de Deuda</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+      background: #f4f6f8;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .ok {
+      color: green;
+      font-weight: bold;
+    }
+
+    .deuda {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Consultar deuda</h2>
+
+  <input type="text" id="dni" placeholder="Ingrese DNI">
+  <br>
+  <button onclick="consultar()">Consultar</button>
+
+  <p id="resultado"></p>
+</div>
+
+<script>
+function consultar() {
+  var dni = document.getElementById("dni").value;
+
+  fetch("https://script.google.com/macros/s/AKfycbxSWjcCQar_kmiODloKBJmyFlA_jj3AHAeB34QcpZrDsA9kFTFFZMkhZB202aHAdqHc/exec?dni=" + dni)
+    .then(res => res.json())
+    .then(data => {
+
+      if (data.error) {
+        resultado.innerText = data.error;
+        return;
+      }
+
+      var estado = "";
+      var clase = "";
+
+      if (data.deuda > 0) {
+        estado = "🔴 Tiene deuda";
+        clase = "deuda";
+      } else {
+        estado = "🟢 Al día";
+        clase = "ok";
+      }
+
+      document.getElementById("resultado").innerHTML =
+        "Cliente: " + data.nombre + "<br>" +
+        "Deuda: $" + data.deuda + "<br>" +
+        "<span class='" + clase + "'>" + estado + "</span>";
+    })
+    .catch(() => {
+      resultado.innerText = "Error al consultar";
+    });
+}
+</script>
+
+</body>
+</html>

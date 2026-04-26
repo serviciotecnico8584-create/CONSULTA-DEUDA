@@ -1,99 +1,36 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Consulta de Deuda</title>
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      margin-top: 50px;
-      background: #f4f6f8;
-    }
-
-    .box {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      width: 300px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    input {
-      padding: 10px;
-      width: 80%;
-      margin-bottom: 10px;
-    }
-
-    button {
-      padding: 10px 20px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .ok {
-      color: green;
-      font-weight: bold;
-    }
-
-    .deuda {
-      color: red;
-      font-weight: bold;
-    }
-  </style>
-</head>
+<html>
 <body>
 
-<div class="box">
-  <h2>Consultar deuda</h2>
+<h2>Prueba JSONP</h2>
 
-  <input type="text" id="dni" placeholder="Ingrese DNI">
-  <br>
-  <button onclick="consultar()">Consultar</button>
+<input id="dni" placeholder="DNI">
+<button onclick="consultar()">Consultar</button>
 
-  <p id="resultado"></p>
-</div>
+<div id="resultado"></div>
 
 <script>
 function consultar() {
   var dni = document.getElementById("dni").value;
 
-  // eliminar script anterior
-  var viejo = document.getElementById("jsonp");
-  if (viejo) viejo.remove();
+  console.log("Consultando DNI:", dni);
 
   var script = document.createElement("script");
-  script.id = "jsonp";
 
-  // 🔥 anti-cache
-  var t = new Date().getTime();
+  script.src = "https://script.google.com/macros/s/AKfycbxSWjcCQar_kmiODloKBJmyFlA_jj3AHAeB34QcpZrDsA9kFTFFZMkhZB202aHAdqHc/exec?dni="
+    + dni + "&callback=mostrar&_=" + Date.now();
 
-  script.src = "https://script.google.com/macros/s/AKfycbxSWjcCQar_kmiODloKBJmyFlA_jj3AHAeB34QcpZrDsA9kFTFFZMkhZB202aHAdqHc/exec?dni=" 
-    + dni + "&callback=mostrar&_=" + t;
+  script.onload = () => console.log("Script cargado");
+  script.onerror = () => console.log("Error cargando script");
 
   document.body.appendChild(script);
 }
 
 function mostrar(data) {
-  var resultado = document.getElementById("resultado");
+  console.log("RESPUESTA:", data);
 
-  console.log("DATA:", data); // debug
-
-  if (!data || data.error) {
-    resultado.innerText = data?.error || "Sin datos";
-    return;
-  }
-
-  var estado = data.deuda > 0 ? "🔴 Tiene deuda" : "🟢 Al día";
-
-  resultado.innerHTML =
-    "Cliente: " + data.nombre + "<br>" +
-    "Deuda: $" + data.deuda + "<br>" +
-    estado;
+  document.getElementById("resultado").innerText =
+    JSON.stringify(data);
 }
 </script>
 
